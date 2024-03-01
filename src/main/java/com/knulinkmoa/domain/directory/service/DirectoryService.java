@@ -6,13 +6,13 @@ import com.knulinkmoa.domain.directory.entity.Directory;
 import com.knulinkmoa.domain.directory.exception.DirectoryErrorCode;
 import com.knulinkmoa.domain.directory.repository.DirectoryRepository;
 import com.knulinkmoa.domain.member.entity.Member;
-import com.knulinkmoa.domain.site.dto.response.SiteReadResponse;
 import com.knulinkmoa.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -46,18 +46,22 @@ public class DirectoryService {
      * READ
      */
     public DirectoryReadResponse readDirectory(Long id) {
-        Directory findDirectory = directoryRepository.findById(id)
+        Directory directory = directoryRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(DirectoryErrorCode.DIRECTORY_NOT_FOUND));
 
-        List<SiteReadResponse> result = DirectoryReadResponse.siteToSiteReadResponse(findDirectory.getSiteList());
-
-        DirectoryReadResponse response = DirectoryReadResponse.builder()
-                .directoryName(findDirectory.getDirectoryName())
-                .siteList(result)
-                .build();
-
-        return response;
+        return DirectoryReadResponse.from(directory);
     }
+
+
+    public List<DirectoryReadResponse> readAllDirectory(Member member) {
+        List<Directory> allRootDirectories =
+                directoryRepository.findDirectoriesWithNullParentByMemberId(member.getId());
+
+        return allRootDirectories.stream()
+                .map((directory) -> DirectoryReadResponse.from(directory))
+                .toList();
+    }
+
 
     /**
      * UPDATE

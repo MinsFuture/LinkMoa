@@ -61,7 +61,7 @@ public class Directory {
 
     public void update(DirectorySaveRequest request) {
         if (request.directoryName() != null) {
-            this.directoryName = directoryName;
+            this.directoryName = request.directoryName();
         }
     }
     public void addSite(Site site){

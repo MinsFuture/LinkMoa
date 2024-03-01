@@ -28,7 +28,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         Collection<? extends GrantedAuthority> authorities = oAuth2User.getAuthorities();
         String role = authorities.iterator().next().getAuthority();
 
-        String token = jwtTokenProvider.createJwt(oAuth2User.getEmail(), role, 60 * 60 * 60L);
+        String token = jwtTokenProvider.createJwt(oAuth2User.getEmail(), role, 60 * 60 * 1000L);
 
         response.addCookie(createCookie("Authorization", token));
         response.sendRedirect("http://localhost:3000");
