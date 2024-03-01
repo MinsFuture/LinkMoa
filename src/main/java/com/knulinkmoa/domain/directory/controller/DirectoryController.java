@@ -5,7 +5,6 @@ import com.knulinkmoa.auth.service.CustomOAuth2User;
 import com.knulinkmoa.domain.directory.dto.request.DirectorySaveRequest;
 import com.knulinkmoa.domain.directory.dto.response.DirectoryReadResponse;
 import com.knulinkmoa.domain.directory.service.DirectoryService;
-import com.knulinkmoa.domain.member.entity.Member;
 import com.knulinkmoa.domain.member.reposotiry.MemberRepository;
 import com.knulinkmoa.global.util.ApiUtil;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping("/dir")
@@ -32,11 +31,14 @@ public class DirectoryController {
     private final DirectoryService directoryService;
     private final MemberRepository memberRepository;
 
+
     /**
-     * ROOT DIRECTORY 추가
+     * ROOT 디렉토리 추가
      *
-     * @param request DIRECTORY 정보
-     * @return 저장한 DIRECTORY의 PK 값
+     * @param request Directory 이름
+     * @param customOAuth2User 어떤 member 인지
+     *
+     * @return 저장한 directory의 pk 값
      */
     @PostMapping()
     @PreAuthorize("isAuthenticated()")
@@ -54,7 +56,9 @@ public class DirectoryController {
      * SUB DIRECTORY 추가
      *
      * @param request DIRECTORY 정보
+     * @param customOAuth2User 어떤 member 인지
      * @param parentId 추가할 디렉토리의 부모 디렉토리 정보
+     *
      * @return 저장한 DIRECTORY의 PK 값
      */
     @PostMapping("/{directoryId}")
@@ -65,24 +69,41 @@ public class DirectoryController {
             @PathVariable(name = "directoryId") Long parentId)
     {
 
-        Long saveId = directoryService.saveDirectory(request, customOAuth2User.getMember(),parentId);
+        Long saveId = directoryService.saveDirectory(request, customOAuth2User.getMember(), parentId);
         return ResponseEntity.ok().body(ApiUtil.success(HttpStatus.CREATED, saveId));
     }
 
     /**
-     * DIRECTORY 내부의 모든 사이트 조회
+     * DIRECTORY 하나 조회
      *
      * @param id 조회할 DIRECTORY의 PK 값
-     * @return 디렉토리 내부의 모든 사이트 정보
+     * @return 한 디렉토리의 디렉토리 정보
      */
     @GetMapping("/{directoryId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiUtil.ApiSuccessResult<DirectoryReadResponse>> readDirectory(
             @PathVariable("directoryId") Long id
     ) {
-
         DirectoryReadResponse response = directoryService.readDirectory(id);
 
         return ResponseEntity.ok().body(ApiUtil.success(HttpStatus.OK, response));
+    }
+
+    /**
+     * 모든 루트 디렉토리 조회, 메인 페이지 용도
+     *
+     * @param customOAuth2User 어떤 member 인지
+     *
+     * @return 모든 루트 디렉토리의 list
+     */
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiUtil.ApiSuccessResult<List<DirectoryReadResponse>>> readAllRootDirectory(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) {
+        List<DirectoryReadResponse> readResponseList = directoryService.readAllDirectory(customOAuth2User.getMember());
+
+        return ResponseEntity.ok().body(ApiUtil.success(HttpStatus.OK, readResponseList));
     }
 
     /**
@@ -90,9 +111,11 @@ public class DirectoryController {
      *
      * @param request 수정할 DIRECTORY 정보
      * @param id 수정할 DIRECTORY의 PK 값
+     *
      * @return 수정한 DIRECTORY의 PK 값
      */
     @PutMapping("/{directoryId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiUtil.ApiSuccessResult<Long>> updateDirectory(
             @RequestBody DirectorySaveRequest request,
             @PathVariable("directoryId") Long id) {
@@ -109,6 +132,7 @@ public class DirectoryController {
      * @return
      */
     @DeleteMapping("/{directoryId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiUtil.ApiSuccessResult<?>> deleteDirectory(
             @PathVariable("directoryId") Long id
     ) {
@@ -116,5 +140,4 @@ public class DirectoryController {
 
         return ResponseEntity.ok().body(ApiUtil.success(HttpStatus.OK));
     }
-
 }
