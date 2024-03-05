@@ -34,18 +34,25 @@ public class Member {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role; // 사용자의 역할
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Directory> directories = new ArrayList<>();
-
     @Builder
-    public Member(Long id, String name, String email, Role role, List<Directory> directories) {
+    public Member(Long id, String name, String email, String password, String phoneNumber, Role role, List<Directory> directories) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
         this.role = role;
         this.directories = directories;
     }

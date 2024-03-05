@@ -1,14 +1,8 @@
 package com.knulinkmoa.global.jwt.filter;
 
-import com.knulinkmoa.auth.dto.request.OAuth2DTO;
 import com.knulinkmoa.auth.service.CustomOAuth2User;
-import com.knulinkmoa.domain.member.entity.Member;
-import com.knulinkmoa.domain.member.entity.Role;
-import com.knulinkmoa.domain.member.exception.MemberErrorCode;
-import com.knulinkmoa.domain.member.reposotiry.MemberRepository;
 import com.knulinkmoa.domain.member.service.MemberService;
-import com.knulinkmoa.global.exception.GlobalException;
-import com.knulinkmoa.global.jwt.provider.JwtTokenProvider;
+import com.knulinkmoa.global.jwt.provider.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -18,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -28,11 +21,11 @@ import java.util.Arrays;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtService jwtService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String [] excludePathLists = {"/login", "/favicon.ico"};
+        String [] excludePathLists = {"/login", "/favicon.ico", "/auth/sign-up"};
         String path = request.getRequestURI();
 
         return Arrays.stream(excludePathLists).
@@ -45,9 +38,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String token = getTokenFromCookie(request.getCookies());
         // String token = jwtTokenProvider.bearerTokenResolver(bearerToken);
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
+        if (token != null && jwtService.validateToken(token)) {
 
-            String email = jwtTokenProvider.getEmail(token);
+            String email = jwtService.getEmail(token);
 
             //UserDetails에 회원 정보 객체 담기
             CustomOAuth2User customOAuth2User = new CustomOAuth2User(memberService.findMemberByEmail(email));
