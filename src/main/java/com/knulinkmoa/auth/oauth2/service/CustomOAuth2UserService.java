@@ -1,12 +1,16 @@
-package com.knulinkmoa.auth.service;
+package com.knulinkmoa.auth.oauth2.service;
 
-import com.knulinkmoa.auth.dto.request.OAuth2DTO;
-import com.knulinkmoa.auth.dto.response.GoogleResponse;
-import com.knulinkmoa.auth.dto.response.NaverResponse;
-import com.knulinkmoa.auth.dto.response.OAuth2Response;
+import com.knulinkmoa.auth.oauth2.dto.request.OAuth2DTO;
+import com.knulinkmoa.auth.oauth2.dto.response.GoogleResponse;
+import com.knulinkmoa.auth.oauth2.dto.response.NaverResponse;
+import com.knulinkmoa.auth.oauth2.dto.response.OAuth2Response;
+import com.knulinkmoa.auth.principal.PricipalDetails;
 import com.knulinkmoa.domain.member.entity.Member;
 import com.knulinkmoa.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -22,6 +26,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         // user 정보를 가져옴
+
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         System.out.println("oAuth2User = " + oAuth2User);
@@ -38,10 +43,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // oAuth2DTO를 통해서, 우리 서비스에서 관리할 member를 saveOrUpdate
         Member member = memberService.saveOrUpdate(oAuth2DTO);
 
-        // customOAuth2User를 리턴
-        CustomOAuth2User customOAuth2User = new CustomOAuth2User(member);
-      
-        return customOAuth2User;
+        // PricipalDetails을 리턴
+        PricipalDetails pricipalDetails = new PricipalDetails(member, oAuth2User.getAttributes());
+
+        return pricipalDetails;
     }
 
     /**

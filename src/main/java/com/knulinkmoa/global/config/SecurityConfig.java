@@ -1,15 +1,15 @@
 package com.knulinkmoa.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.knulinkmoa.auth.handler.CustomOAuth2SuccessHandler;
-import com.knulinkmoa.auth.handler.LoginFailureHandler;
-import com.knulinkmoa.auth.handler.LoginSuccessHandler;
-import com.knulinkmoa.auth.service.CustomJsonUsernamePasswordAuthenticationFilter;
-import com.knulinkmoa.auth.service.CustomOAuth2UserService;
-import com.knulinkmoa.auth.service.LoginService;
+import com.knulinkmoa.auth.oauth2.handler.CustomOAuth2SuccessHandler;
+import com.knulinkmoa.auth.itself.handler.LoginFailureHandler;
+import com.knulinkmoa.auth.itself.handler.LoginSuccessHandler;
+import com.knulinkmoa.auth.itself.filter.CustomJsonUsernamePasswordAuthenticationFilter;
+import com.knulinkmoa.auth.oauth2.service.CustomOAuth2UserService;
+import com.knulinkmoa.auth.itself.service.LoginService;
 import com.knulinkmoa.domain.member.service.MemberService;
-import com.knulinkmoa.global.jwt.filter.JwtAuthorizationFilter;
-import com.knulinkmoa.global.jwt.provider.JwtService;
+import com.knulinkmoa.auth.jwt.filter.JwtAuthorizationFilter;
+import com.knulinkmoa.auth.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +22,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -34,6 +35,7 @@ public class SecurityConfig{
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
     private final LoginService loginService;
     private final MemberService memberService;
@@ -51,28 +53,22 @@ public class SecurityConfig{
                                 .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll()
                                 .anyRequest().authenticated())
-                        .addFilterBefore(new JwtAuthorizationFilter(memberService, jwtService), UsernamePasswordAuthenticationFilter.class)
-                        .addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
-                        .oauth2Login(oauth2 -> oauth2
+                       .oauth2Login(oauth2 -> oauth2
                                         .userInfoEndpoint(userInfoEndpointConfig ->
                                                 userInfoEndpointConfig.userService(customOAuth2UserService))
                                         .successHandler(customOAuth2SuccessHandler)
                                 )
+                        .addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
+                        .addFilterBefore(jwtAuthorizationFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class)
                         .sessionManagement((session) -> session
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .build();
     }
 
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     @Bean
     public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
         provider.setUserDetailsService(loginService);
 
         return new ProviderManager(provider);
@@ -99,4 +95,8 @@ public class SecurityConfig{
         return customJsonUsernamePasswordAuthenticationFilter;
     }
 
+    @Bean
+    public JwtAuthorizationFilter jwtAuthorizationFilter() {
+        return new JwtAuthorizationFilter(memberService, jwtService);
+    }
 }

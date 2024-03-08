@@ -1,4 +1,4 @@
-package com.knulinkmoa.auth.service;
+package com.knulinkmoa.auth.itself.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;

@@ -1,4 +1,4 @@
-package com.knulinkmoa.auth.handler;
+package com.knulinkmoa.auth.itself.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

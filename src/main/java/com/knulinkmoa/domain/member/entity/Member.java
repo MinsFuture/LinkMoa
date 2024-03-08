@@ -1,6 +1,6 @@
 package com.knulinkmoa.domain.member.entity;
 
-import com.knulinkmoa.auth.dto.request.OAuth2DTO;
+import com.knulinkmoa.auth.oauth2.dto.request.OAuth2DTO;
 import com.knulinkmoa.domain.directory.entity.Directory;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -44,6 +44,9 @@ public class Member {
     @Column(name = "role")
     private Role role; // 사용자의 역할
 
+    @Column(name = "refresh_token")
+    private String refresh;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Directory> directories = new ArrayList<>();
     @Builder
@@ -69,5 +72,9 @@ public class Member {
         if (oAuth2DTO.role() != null) {
             this.role = Role.valueOf(oAuth2DTO.role());
         }
+    }
+
+    public void updateRefreshToken(String refresh) {
+        this.refresh = refresh;
     }
  }

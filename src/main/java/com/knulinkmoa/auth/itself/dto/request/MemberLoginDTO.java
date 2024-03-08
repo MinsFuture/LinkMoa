@@ -1,4 +1,4 @@
-package com.knulinkmoa.domain.member.dto.request;
+package com.knulinkmoa.auth.itself.dto.request;
 
 public record MemberLoginDTO(String email, String password) {
 }
