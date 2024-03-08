@@ -4,6 +4,7 @@ import com.knulinkmoa.auth.principal.PricipalDetails;
 import com.knulinkmoa.domain.directory.dto.response.DirectoryReadResponse;
 import com.knulinkmoa.domain.directory.service.DirectoryService;
 import com.knulinkmoa.global.util.ApiUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "메인화면", description = "메인화면 관련 Api")
 public class MainController {
 
     private final DirectoryService directoryService;

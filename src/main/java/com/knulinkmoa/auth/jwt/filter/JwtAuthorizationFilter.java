@@ -28,9 +28,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String[] excludePathLists = {"/login", "/favicon.ico", "/auth/sign-up", "/auth/login", "/auth/main"
-        ,"/oauth2/authorization/google", "/login/oauth2/code/google"};
+        String[] excludePathLists = {"/login", "/favicon.ico",
+                "/oauth2/authorization/google", "/login/oauth2/code/google", "/v3/api-docs"};
         String path = request.getRequestURI();
+
+        if (path.startsWith("/auth")) {
+            return true;
+        }
+
+        if (path.startsWith("/v3")) {
+            return true;
+        }
 
         return Arrays.stream(excludePathLists).
                 anyMatch((excludePath) -> excludePath.equals(path));

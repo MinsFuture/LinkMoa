@@ -7,6 +7,7 @@ import com.knulinkmoa.domain.directory.dto.response.DirectoryReadResponse;
 import com.knulinkmoa.domain.directory.service.DirectoryService;
 import com.knulinkmoa.domain.member.reposotiry.MemberRepository;
 import com.knulinkmoa.global.util.ApiUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/dir")
 @RequiredArgsConstructor
+@Tag(name = "디렉토리", description = "디렉토리 관련 Api")
 public class DirectoryController {
 
     private final DirectoryService directoryService;
