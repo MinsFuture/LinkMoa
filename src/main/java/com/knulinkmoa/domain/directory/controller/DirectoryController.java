@@ -1,12 +1,13 @@
 package com.knulinkmoa.domain.directory.controller;
 
 
-import com.knulinkmoa.auth.service.CustomOAuth2User;
+import com.knulinkmoa.auth.principal.PricipalDetails;
 import com.knulinkmoa.domain.directory.dto.request.DirectorySaveRequest;
 import com.knulinkmoa.domain.directory.dto.response.DirectoryReadResponse;
 import com.knulinkmoa.domain.directory.service.DirectoryService;
 import com.knulinkmoa.domain.member.reposotiry.MemberRepository;
 import com.knulinkmoa.global.util.ApiUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/dir")
 @RequiredArgsConstructor
+@Tag(name = "디렉토리", description = "디렉토리 관련 Api")
 public class DirectoryController {
 
     private final DirectoryService directoryService;
@@ -36,7 +38,7 @@ public class DirectoryController {
      * ROOT 디렉토리 추가
      *
      * @param request Directory 이름
-     * @param customOAuth2User 어떤 member 인지
+     * @param pricipalDetails 어떤 member 인지
      *
      * @return 저장한 directory의 pk 값
      */
@@ -44,9 +46,9 @@ public class DirectoryController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiUtil.ApiSuccessResult<Long>> saveRootDirectory(
             @RequestBody DirectorySaveRequest request,
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+            @AuthenticationPrincipal PricipalDetails pricipalDetails
     ) {
-        Long saveId = directoryService.saveDirectory(request, customOAuth2User.getMember(), null);
+        Long saveId = directoryService.saveDirectory(request, pricipalDetails.getMember(), null);
 
         return ResponseEntity.ok().body(ApiUtil.success(HttpStatus.CREATED, saveId));
     }
@@ -56,7 +58,7 @@ public class DirectoryController {
      * SUB DIRECTORY 추가
      *
      * @param request DIRECTORY 정보
-     * @param customOAuth2User 어떤 member 인지
+     * @param pricipalDetails 어떤 member 인지
      * @param parentId 추가할 디렉토리의 부모 디렉토리 정보
      *
      * @return 저장한 DIRECTORY의 PK 값
@@ -65,11 +67,11 @@ public class DirectoryController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiUtil.ApiSuccessResult<Long>> saveSubDirectory(
             @RequestBody DirectorySaveRequest request,
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            @AuthenticationPrincipal PricipalDetails pricipalDetails,
             @PathVariable(name = "directoryId") Long parentId)
     {
 
-        Long saveId = directoryService.saveDirectory(request, customOAuth2User.getMember(), parentId);
+        Long saveId = directoryService.saveDirectory(request, pricipalDetails.getMember(), parentId);
         return ResponseEntity.ok().body(ApiUtil.success(HttpStatus.CREATED, saveId));
     }
 
@@ -92,16 +94,16 @@ public class DirectoryController {
     /**
      * 모든 루트 디렉토리 조회, 메인 페이지 용도
      *
-     * @param customOAuth2User 어떤 member 인지
+     * @param pricipalDetails 어떤 member 인지
      *
      * @return 모든 루트 디렉토리의 list
      */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiUtil.ApiSuccessResult<List<DirectoryReadResponse>>> readAllRootDirectory(
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+            @AuthenticationPrincipal PricipalDetails pricipalDetails
     ) {
-        List<DirectoryReadResponse> readResponseList = directoryService.readAllDirectory(customOAuth2User.getMember());
+        List<DirectoryReadResponse> readResponseList = directoryService.readAllDirectory(pricipalDetails.getMember());
 
         return ResponseEntity.ok().body(ApiUtil.success(HttpStatus.OK, readResponseList));
     }

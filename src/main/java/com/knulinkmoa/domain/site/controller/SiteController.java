@@ -7,6 +7,7 @@ import com.knulinkmoa.domain.site.dto.request.SiteSaveRequest;
 import com.knulinkmoa.domain.site.dto.request.SiteUpdateRequest;
 import com.knulinkmoa.domain.site.dto.response.SiteReadResponse;
 import com.knulinkmoa.domain.site.service.SiteService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ import java.nio.file.Path;
 @RestController
 @RequestMapping("/dir/{directoryId}")
 @RequiredArgsConstructor
+@Tag(name = "사이트", description = "사이트 관련 Api")
+
 public class SiteController {
 
     private final SiteService siteService;

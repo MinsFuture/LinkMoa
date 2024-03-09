@@ -1,4 +1,4 @@
-package com.knulinkmoa.auth.dto.request;
+package com.knulinkmoa.auth.oauth2.dto.request;
 
 import com.knulinkmoa.domain.member.entity.Member;
 import com.knulinkmoa.domain.member.entity.Role;

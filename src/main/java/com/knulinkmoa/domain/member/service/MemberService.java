@@ -1,6 +1,6 @@
 package com.knulinkmoa.domain.member.service;
 
-import com.knulinkmoa.auth.dto.request.OAuth2DTO;
+import com.knulinkmoa.auth.oauth2.dto.request.OAuth2DTO;
 import com.knulinkmoa.domain.member.entity.Member;
 import com.knulinkmoa.domain.member.exception.MemberErrorCode;
 import com.knulinkmoa.domain.member.reposotiry.MemberRepository;
@@ -37,6 +37,11 @@ public class MemberService {
 
     public Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GlobalException(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    public Member findMemberByRefresh(String refresh) {
+        return memberRepository.findByRefresh(refresh)
                 .orElseThrow(() -> new GlobalException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
