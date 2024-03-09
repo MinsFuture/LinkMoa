@@ -52,6 +52,7 @@ public class SecurityConfig{
                         .authorizeHttpRequests((auth) -> auth
                                 .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/reissue")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/v3/**")).permitAll()
                                 .anyRequest().authenticated())
                        .oauth2Login(oauth2 -> oauth2

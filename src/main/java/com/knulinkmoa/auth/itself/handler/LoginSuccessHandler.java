@@ -33,9 +33,9 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String refreshToken =  jwtService.createRefreshToken();
         jwtService.saveRefreshToken(email, refreshToken);
 
-        response.addCookie(jwtService.createCookie("Authorization", accessToken));
+        response.setHeader("Accesstoken", accessToken);
         response.addCookie(jwtService.createCookie("Authorization-refresh", refreshToken));
-        response.sendRedirect("http://localhost:8080");
+        response.sendRedirect("http://localhost:3000");
 
         log.info("자체 로그인에 성공하였습니다. 이메일 : {}",  email);
         log.info("자체 로그인에 성공하였습니다. Access Token : {}",  accessToken);

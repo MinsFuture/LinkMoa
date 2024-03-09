@@ -33,15 +33,13 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String email = oAuth2User.getEmail();
         String role = authorities.iterator().next().getAuthority();
 
-        System.out.println("role = " + role);
-
         String accessToken = jwtService.createAccessToken(email, role);
         String refreshToken =  jwtService.createRefreshToken();
         jwtService.saveRefreshToken(email, refreshToken);
 
-        response.addCookie(jwtService.createCookie("Authorization", accessToken));
+        response.setHeader("Accesstoken", accessToken);
         response.addCookie(jwtService.createCookie("Authorization-refresh", refreshToken));
-        response.sendRedirect("http://localhost:8080");
+        response.sendRedirect("http://localhost:3000");
 
         log.info("OAuth2 로그인에 성공하였습니다. 이메일 : {}",  oAuth2User.getEmail());
         log.info("OAuth2 로그인에 성공하였습니다. Access Token : {}",  accessToken);

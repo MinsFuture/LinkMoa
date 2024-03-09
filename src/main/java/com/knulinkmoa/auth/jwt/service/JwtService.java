@@ -21,6 +21,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -40,6 +41,7 @@ public class JwtService {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm());
     }
+
     public String getUsername(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
     }
@@ -75,7 +77,6 @@ public class JwtService {
     }
 
     public String createAccessToken(String email, String role) {
-
         return Jwts.builder()
                 .claim("email", email)
                 .claim("role", role)
@@ -100,36 +101,17 @@ public class JwtService {
         member.updateRefreshToken(refresh);
         memberRepository.save(member);
     }
+
     public Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60*60*60);
+        cookie.setMaxAge(60 * 60 * 60);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
 
         return cookie;
     }
-    public void updateRefreshToken(String email, String refresh) {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new GlobalException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        if (refresh != null) {
-            member.updateRefreshToken(refresh);
-        }
-
-        memberRepository.save(member);
+    public Optional<Member> findMemberByRefreshToken(String refresh) {
+        return memberRepository.findByRefresh(refresh);
     }
-    public boolean isVaildRefreshToken(String refresh) {
-        return memberRepository.existsByRefresh(refresh);
-    }
-
-    public String findEmailByRefreshToken(String refresh) {
-        Member member = memberRepository.findByRefresh(refresh)
-                .orElseThrow(() -> new GlobalException(MemberErrorCode.MEMBER_NOT_FOUND));
-
-        return member.getEmail();
-    }
-
-
-
-
 }
