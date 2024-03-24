@@ -31,7 +31,7 @@ public class DirectoryService {
                 .member(member)
                 .build();
 
-        if (parentId != null) {
+        if (parentId != 0L) {
             Directory parentDirectory = directoryRepository.findById(parentId)
                     .orElseThrow(() -> new GlobalException(DirectoryErrorCode.DIRECTORY_NOT_FOUND));
 

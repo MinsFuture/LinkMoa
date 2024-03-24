@@ -4,6 +4,7 @@ import com.knulinkmoa.auth.principal.PricipalDetails;
 import com.knulinkmoa.domain.directory.dto.response.DirectoryReadResponse;
 import com.knulinkmoa.domain.directory.service.DirectoryService;
 import com.knulinkmoa.global.util.ApiUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ public class MainController {
     private final DirectoryService directoryService;
 
     @GetMapping
+    @Operation(summary = "메인화면", description = "모든 root 디렉토리의 id 값을 리턴 해줌")
     public ResponseEntity<ApiUtil.ApiSuccessResult<List<DirectoryReadResponse>>> main(
             @AuthenticationPrincipal PricipalDetails pricipalDetails
             ) {

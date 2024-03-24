@@ -5,7 +5,6 @@ import com.knulinkmoa.domain.directory.entity.Directory;
 import com.knulinkmoa.domain.directory.exception.DirectoryErrorCode;
 import com.knulinkmoa.domain.directory.repository.DirectoryRepository;
 import com.knulinkmoa.global.exception.GlobalException;
-import com.knulinkmoa.domain.site.dto.request.SiteIdGetRequest;
 import com.knulinkmoa.domain.site.dto.request.SiteSaveRequest;
 import com.knulinkmoa.domain.site.dto.request.SiteUpdateRequest;
 import com.knulinkmoa.domain.site.dto.response.SiteReadResponse;
@@ -46,8 +45,8 @@ public class SiteService {
     /**
      * READ
      */
-    public SiteReadResponse readSite(SiteIdGetRequest request) {
-        Site site = siteRepository.findById(request.siteId())
+    public SiteReadResponse readSite(Long siteId) {
+        Site site = siteRepository.findById(siteId)
                 .orElseThrow(() -> new GlobalException(SiteErrorCode.SITE_NOT_FOUND));
 
         return SiteReadResponse.builder()
@@ -65,13 +64,10 @@ public class SiteService {
      */
 
     @Transactional
-    public Long updateSite(SiteUpdateRequest request,Long directoryId) {
-        Site site = siteRepository.findById(request.oldSiteId())
+    public Long updateSite(SiteUpdateRequest request, Long siteId) {
+        Site site = siteRepository.findById(siteId)
                 .orElseThrow(() -> new GlobalException(SiteErrorCode.SITE_NOT_FOUND));
-        Directory directory = directoryRepository.findById(directoryId)
-                        .orElseThrow(() -> new GlobalException(DirectoryErrorCode.DIRECTORY_NOT_FOUND));
 
-        site.setDirectory(directory);
         site.update(request);
 
         siteRepository.save(site);
@@ -82,8 +78,8 @@ public class SiteService {
      * DELETE
      */
     @Transactional
-    public void deleteSite(SiteIdGetRequest request) {
-        Site deleteSite = siteRepository.findById(request.siteId())
+    public void deleteSite(Long siteId) {
+        Site deleteSite = siteRepository.findById(siteId)
                 .orElseThrow(() -> new GlobalException(SiteErrorCode.SITE_NOT_FOUND));
 
         siteRepository.delete(deleteSite);

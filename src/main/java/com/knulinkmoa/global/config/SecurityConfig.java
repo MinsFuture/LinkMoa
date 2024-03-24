@@ -20,13 +20,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -46,6 +48,7 @@ public class SecurityConfig{
 
         return
                 http
+                        .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()))
                         .csrf(AbstractHttpConfigurer::disable)
                         .formLogin(AbstractHttpConfigurer::disable)
                         .httpBasic(AbstractHttpConfigurer::disable)
@@ -54,6 +57,8 @@ public class SecurityConfig{
                                 .requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/reissue")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/v3/**")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/test")).permitAll()
+
                                 .anyRequest().authenticated())
                        .oauth2Login(oauth2 -> oauth2
                                         .userInfoEndpoint(userInfoEndpointConfig ->
@@ -101,4 +106,21 @@ public class SecurityConfig{
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
         return new JwtAuthorizationFilter(memberService, jwtService);
     }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080"));
+        config.setAllowedMethods(Arrays.asList("*"));
+        config.setAllowCredentials(true);
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setMaxAge(3600L); //1시간
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
 }
+
+

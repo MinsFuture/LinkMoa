@@ -47,6 +47,7 @@ public class ReissueController {
             String newAccessToken = jwtService.createAccessToken(email, role);
             log.info("newAccessToken : {}", newAccessToken);
 
+
             return ResponseEntity.status(HttpStatus.OK)
                     .header("Accesstoken", newAccessToken)
                     .build();

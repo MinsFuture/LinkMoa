@@ -6,6 +6,7 @@ plugins {
 
 group = 'com.knulinkmoa'
 version = '0.0.1-SNAPSHOT'
+archivesBaseName = 'my-application'
 
 java {
 	sourceCompatibility = '17'
@@ -44,6 +45,7 @@ dependencies {
 
 	// MySql
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
 	// Jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
