@@ -29,6 +29,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -114,8 +115,9 @@ public class SecurityConfig{
         config.setAllowedMethods(Arrays.asList("*"));
         config.setAllowCredentials(true);
         config.setAllowedHeaders(Arrays.asList("*"));
-        config.setMaxAge(3600L); //1시간
+        config.setExposedHeaders(Arrays.asList("accesstoken"));
 
+        config.setMaxAge(3600L); //1시간
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
