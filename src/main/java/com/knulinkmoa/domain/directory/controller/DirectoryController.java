@@ -6,6 +6,8 @@ import com.knulinkmoa.domain.directory.dto.request.DirectorySaveRequest;
 import com.knulinkmoa.domain.directory.dto.response.DirectoryReadResponse;
 import com.knulinkmoa.domain.directory.service.DirectoryService;
 import com.knulinkmoa.domain.member.reposotiry.MemberRepository;
+import com.knulinkmoa.domain.site.dto.response.SiteReadResponse;
+import com.knulinkmoa.domain.site.entity.Site;
 import com.knulinkmoa.global.util.ApiUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -91,6 +93,23 @@ public class DirectoryController {
         List<DirectoryReadResponse> readResponseList = directoryService.readAllDirectory(pricipalDetails.getMember());
 
         return ResponseEntity.ok().body(ApiUtil.success(HttpStatus.OK, readResponseList));
+    }
+
+    /**
+     * 한 디렉토리의 모든 사이트 조회
+     *
+     * @param directoryId 조회 할 DIRECTORY의 PK 값
+     * @return 모든 site들의 lists
+     */
+    @GetMapping("/{directoryId}/sites")
+    @Operation(summary = "한 디렉토리 모든 사이트 조회", description = "한 디렉토리에 저장 된 모든 사이트를 조회한다")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiUtil.ApiSuccessResult<List<SiteReadResponse>>> getAllSites(
+            @PathVariable("directoryId") Long directoryId
+    ){
+        List<SiteReadResponse> sites = directoryService.readAllSites(directoryId);
+
+        return ResponseEntity.ok().body(ApiUtil.success(HttpStatus.OK, sites));
     }
 
     /**

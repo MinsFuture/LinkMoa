@@ -6,13 +6,14 @@ import com.knulinkmoa.domain.directory.entity.Directory;
 import com.knulinkmoa.domain.directory.exception.DirectoryErrorCode;
 import com.knulinkmoa.domain.directory.repository.DirectoryRepository;
 import com.knulinkmoa.domain.member.entity.Member;
+import com.knulinkmoa.domain.site.dto.response.SiteReadResponse;
+import com.knulinkmoa.domain.site.entity.Site;
 import com.knulinkmoa.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -62,6 +63,13 @@ public class DirectoryService {
                 .toList();
     }
 
+    public List<SiteReadResponse> readAllSites(Long id){
+        Directory directory = directoryRepository.findById(id)
+                .orElseThrow(() -> new GlobalException(DirectoryErrorCode.DIRECTORY_NOT_FOUND));
+
+        List<Site> siteList = directory.getSiteList();
+        return SiteReadResponse.makeFrom(siteList);
+    }
 
     /**
      * UPDATE
